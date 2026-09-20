@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+    <title>classroom4x.dev</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #000;
+      }
+
+      #unity-container {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      #unity-canvas {
+        width: 100% !important;
+        height: 100% !important;
+        background: #000;
+      }
+
+      #unity-logo {
+        width: auto !important;
+        height: auto !important;
+        background: none !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      #unity-logo::before {
+        content: "classroom4x.dev";
+      }
+
+      #unity-build-title {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"></div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">classroom4x.dev</div>
+      </div>
+    </div>
+
+    <script>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function resizeCanvas() {
+        const pixelRatio = window.devicePixelRatio || 1;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        canvas.width = Math.floor(width * pixelRatio);
+        canvas.height = Math.floor(height * pixelRatio);
+
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+      }
+
+      window.addEventListener("load", resizeCanvas);
+      window.addEventListener("resize", resizeCanvas);
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      // ფაილების ფარდობითი გზები (Relative Paths) GitHub Pages-ისთვის
+      var loaderUrl = "./CrazyGames.loader.js";
+
+      var config = {
+        dataUrl: "./76ecb97753f3337adb562f03df01a964.data.br",
+        frameworkUrl: "./c5c7155bd9b052325460f2243f38dcfa.js.br",
+        codeUrl: "./4921bd78c599f1b5bebc3b8040ded3b9.wasm.br",
+        streamingAssetsUrl: "undefined",
+        companyName: "DefaultCompany",
+        productName: "classroom4x.dev",
+        productVersion: "1.0",
+        showBanner: unityShowBanner,
+        matchWebGLToCanvasSize: false,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        container.className = "unity-mobile";
+        canvas.className = "unity-mobile";
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+          window.parent.postMessage(
+            { type: "unity-progress", progress: Math.round(progress * 100) },
+            "*"
+          );
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          resizeCanvas();
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+          window.parent.postMessage(
+            { type: "unity-progress", progress: 100 },
+            "*"
+          );
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
