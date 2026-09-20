@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
     <title>classroom4x.dev</title>
-    <link rel="stylesheet" href="./style.css">
     <style>
       html, body {
         width: 100%;
@@ -12,21 +11,29 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background: #000;
+        background: #231F20;
       }
 
       #unity-container {
+        position: absolute;
         width: 100% !important;
         height: 100% !important;
-        position: absolute;
-        top: 0;
         left: 0;
+        top: 0;
       }
 
       #unity-canvas {
         width: 100% !important;
         height: 100% !important;
-        background: #000;
+        background: #231F20;
+      }
+
+      #unity-loading-bar {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
       }
 
       #unity-logo {
@@ -47,10 +54,50 @@
         content: "classroom4x.dev";
       }
 
+      #unity-progress-bar-empty {
+        width: 141px;
+        height: 18px;
+        margin: 10px auto 0 auto;
+        background: url('https://raw.githack.com/isgames/QBLegend/main/TemplateData/progress-bar-empty-dark.png') no-repeat center;
+      }
+
+      #unity-progress-bar-full {
+        width: 0%;
+        height: 18px;
+        background: url('https://raw.githack.com/isgames/QBLegend/main/TemplateData/progress-bar-full-dark.png') no-repeat center;
+      }
+
+      #unity-footer {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      #unity-fullscreen-button {
+        width: 38px;
+        height: 38px;
+        background: url('https://raw.githack.com/isgames/QBLegend/main/TemplateData/fullscreen-button.png') no-repeat center;
+        cursor: pointer;
+      }
+
       #unity-build-title {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 14px;
         color: #ffffff;
+      }
+
+      #unity-warning {
+        position: absolute;
+        left: 50%;
+        top: 5%;
+        transform: translate(-50%, 0);
+        background: white;
+        padding: 10px;
+        display: none;
       }
     </style>
   </head>
@@ -65,7 +112,6 @@
       </div>
       <div id="unity-warning"></div>
       <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
         <div id="unity-build-title">classroom4x.dev</div>
       </div>
@@ -112,7 +158,6 @@
         updateBannerVisibility();
       }
 
-      // ფაილების ფარდობითი გზები (Relative Paths) GitHub Pages-ისთვის
       var loaderUrl = "./CrazyGames.loader.js";
 
       var config = {
